@@ -1,11 +1,21 @@
 Total Time: 4 hours estimated
 
-Game Setup: 1.5 hours - Laying the foundation of the entire project. Necessitates time given to strategy/planning in addition to actual implementation.
+Game Setup: 1.5 hours 
+- Laying the foundation of the entire project
+- Necessitates time given to strategy/planning in addition to actual implementation
 
-Playing the Game: 30 minutes - Designing player vs player style and user inputs/outputs. Should be relatively quick once game setup is complete.
+Playing the Game: 30 minutes
+- Designing player vs player style and user inputs/outputs
+- Should be relatively quick once game setup is complete
 
-Destroying a Ship: 30 minutes - Differentiating between partially hit ship and destroyed ship. Should also be relativley quick.
+Destroying a Ship: 30 minutes
+- Differentiating between partially hit ship and destroyed ship
+- Should also be relativley quick
 
-Player's View: 1 hour - Requires designing an interface to be shown after each turn during the game. Involves both layout design and logical implementation.
+Player's View: 1 hour
+- Requires designing an interface to be shown after each turn during the game
+- Involves both layout design and logical implementation
 
-Game End: 30 minutes - Making sure game knows when to stop and displays winning message. Will also provide finishing touches on other sections.
+Game End: 30 minutes
+- Making sure game knows when to stop and displays winning message
+- Will also provide finishing touches on other sections
