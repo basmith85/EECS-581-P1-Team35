@@ -1,1 +1,37 @@
+Battleship Game
+This program implements a two-player Battleship game with manual ship placement. Players take turns firing
+shots at each other's board, and the first player to sink all the opponent's ships wins.
+Inputs: Player inputs for placing ships and firing shots
+Output: Hits, misses, ship status (sunk or not)
+Author: Darshil Patel, Blake Smith, Ike Phillips, Brady Holland, Kansas Lees
+Created on: 09/13/24
+
+Classes:
+
+    Ship: creates the ship entities within the game. Each ship has a name, size, coordinates, and the number of hits it has take. 
+
+        Ships Functions: 
+            "is_sunk()": which returns true if the number of hits is the same as the size of the ship.
+
+    Board: The board class reprsents and creates the board on which the game is played. The board has a size, a grid to represent the playspace with "~" representing water, a ships attribute to keep track of the number of ships on the board, and a shots attribute to keep track of the number of shots fired. 
+
+        Board functions:
+            "display(show_ships bool)": displays the board, optionally showing the ships in the game.
+
+            "place_ship(start_row int, start_col int, horizontal bool)": places ships on the board at the specified row and column.
+
+            "fire(row int, col int)": fires a shot at the opponent's board and determines if the shot is a hit or not. 
+
+Functions:
+
+    "initialize_game()": starts the game by setting up the board for each player and prompting the players how many ships they want. Ships will be created based off them number of ships the players decide to play with and they will be prompted to place the ships after. 
+
+    "place_ship_manually(board, ship)": allows the players to manually place their ships onto the board.
+
+    "game_loop(player1_board, player2_board)" creates the actual loop for the game allowing each player to take turns firing shots at the other players board. The results of the last turn are displayed to each player after a turn ends. 
+
+    "player_turn(opponent_board, player_name)": Implements the code for a player to take their turn during the game. Used in the "game_loop" function.
+
+    "clear_screen()": clears the screen for a player. Used to keep players from seeing eachother's boards.
+
 
