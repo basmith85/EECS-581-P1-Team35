@@ -1,20 +1,26 @@
 ---------------------------------------------------------------------------------------------
 Date: 9/9/24
 Hours: 0.5
-Description: Setting up github repository - Created folders/files for code and documentaion
+Description: Setting up github repository - Created folders/files for code and documentaion.
 ---------------------------------------------------------------------------------------------
 Date: 9/9/24
 Hours: 0.25
-Description: First GTA Team meeting - Showed Github progress and did personal introductions
+Description: First GTA Team meeting - Showed Github progress and did personal introductions.
 ---------------------------------------------------------------------------------------------
 Date: 9/12/24
 Hours: 2.5
 Description: First group coding session - Completed game setup (Choosing how many ships to play
-with and placement of ships by players 1 and 2). Involved creating player boards using dictionaries
-and writing functions to check valid ship placements, place ships, print a player's board, and
-clear the screen.
+with and placement of ships by each player). Involved creating Ship and Board classes and writing
+functions to place ships, print a player's board, and clear the screen.
 ---------------------------------------------------------------------------------------------
 Date: 9/15/24
-Hours: 1
-Description: Final touches and Quality Assurance. Squashed some bugs and made sure the game was ready to submit.
+Hours: 1.5
+Description: Second group coding session - Finished firing mechanism and player vs player game
+looping. This included functions for firing shots, designating a player's turn, and looping player
+turns until completion of the game.
+---------------------------------------------------------------------------------------------
+Date: 9/15/24
+Hours: 0.5
+Description: Final touches and Quality Assurance - Squashed some bugs and made sure the game was
+ready to submit.
 ---------------------------------------------------------------------------------------------
