@@ -8,9 +8,6 @@ Author: Darshil Patel, Blake Smith, Ike Phillips, Brady Holland, Kansas Lees (ad
 Created on: 09/13/24
 """
 
-import random
-
-
 # Ship class represents a ship's properties: name, size, coordinates, and hits it has taken.
 class Ship:
     def __init__(self, name, size):
@@ -118,14 +115,6 @@ def initialize_game():
     print("\n" * 50)
     return player1_board, player2_board
 
-
-# Place ships randomly for the opponent.
-def place_ship_randomly(board, ship):
-    placed = False
-    while not placed:
-        row, col = random.randint(0, board.size - 1), random.randint(0, board.size - 1)
-        horizontal = random.choice([True, False])
-        placed = board.place_ship(ship, row, col, horizontal)
 
 def place_ship_manually(board, ship):
     board.display(show_ships=True)
