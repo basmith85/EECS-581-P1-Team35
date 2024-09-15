@@ -1,10 +1,10 @@
 """
 Battleship Game
-This program implements a two-player Battleship game with manual and random ship placement. Players take turns firing
+This program implements a two-player Battleship game with manual ship placement. Players take turns firing
 shots at each other's board, and the first player to sink all the opponent's ships wins.
 Inputs: Player inputs for placing ships and firing shots
 Output: Hits, misses, ship status (sunk or not)
-Author: Darshil Patel, (add your names)
+Author: Darshil Patel, Blake Smith, Ike Phillips, Brady Holland, Kansas Lees (add your names)
 Created on: 09/13/24
 """
 
@@ -86,24 +86,37 @@ class Board:
 
 # Initialize the game by setting up boards and placing ships for both players.
 def initialize_game():
-    player_game_board = Board()
-    opponent_game_board = Board()
+    player1_board = Board()
+    player2_board = Board()
 
-    # Define ships for both players
-    ships = [
-        Ship("Destroyer", 2),
-        Ship("Submarine", 3),
-        Ship("Cruiser", 3),
-        Ship("Battleship", 4),
-        Ship("Carrier", 5)
-    ]
+    # Ask the players how many ships they want to play with
+    while True:
+        try:
+            num_ships = int(input("Enter the number of ships (1 to 5): "))
+            if num_ships < 1 or num_ships > 5:
+                print("Please enter a number between 1 and 5.")
+            else:
+                break
+        except ValueError:
+            print("Invalid input! Please enter a number between 1 and 5.")
 
-    # Player places ships manually, while the opponent places ships randomly.
+    # Create ships based on the number chosen
+    ships = [Ship(f"Ship {i}", i) for i in range(1, num_ships + 1)]
+
+    # Player 1 places ships
+    print("\nPlayer 1, place your ships:")
     for ship in ships:
-        place_ship_manually(player_game_board, ship)
-        place_ship_randomly(opponent_game_board, ship)
+        place_ship_manually(player1_board, ship)
 
-    return player_game_board, opponent_game_board
+    # Clear the screen or add some delay to avoid Player 2 seeing Player 1's board
+    print("\n" * 50)  # This clears the screen
+
+    # Player 2 places ships
+    print("\nPlayer 2, place your ships:")
+    for ship in ships:
+        place_ship_manually(player2_board, ship)
+    print("\n" * 50)
+    return player1_board, player2_board
 
 
 # Place ships randomly for the opponent.
@@ -114,16 +127,14 @@ def place_ship_randomly(board, ship):
         horizontal = random.choice([True, False])
         placed = board.place_ship(ship, row, col, horizontal)
 
-
-# Allow the player to manually place their ships on the board.
 def place_ship_manually(board, ship):
     board.display(show_ships=True)
     print(f"\nPlace your {ship.name} (size {ship.size})")
 
     while True:
         pos = input("Enter starting position (e.g., A5): ").upper()
-        if len(pos) < 2:
-            print("Invalid input! Please try again.")
+        if len(pos) < 2 or not pos[0].isalpha() or not pos[1:].isdigit():
+            print("Invalid input format! Please enter a valid position like 'A5'.")
             continue
 
         col = ord(pos[0]) - 65  # Convert 'A' to 0, 'B' to 1, etc.
@@ -133,69 +144,166 @@ def place_ship_manually(board, ship):
             print("Position out of bounds! Please try again.")
             continue
 
-        orientation = input("Horizontal or Vertical (H/V): ").upper()
-        if orientation not in ('H', 'V'):
-            print("Invalid orientation! Please enter 'H' or 'V'.")
-            continue
-
-        horizontal = orientation == 'H'
-        if board.place_ship(ship, row, col, horizontal):
-            print(f"{ship.name} placed successfully!")
-            break
+        # Skip direction prompt for 1x1 ships
+        if ship.size == 1:
+            if board.place_ship(ship, row, col, horizontal=True):
+                print(f"{ship.name} placed successfully!")
+                break
         else:
-            print("Invalid position or out of bounds! Try again.")
+            direction = input("Enter direction (North, South, East, West - N/S/E/W): ").upper()
+            if direction not in ('N', 'S', 'E', 'W'):
+                print("Invalid direction! Please enter 'N', 'S', 'E', or 'W'.")
+                continue
+
+            overlap = False  # Variable to track if there’s an overlap
+
+            if direction == 'E':
+                if col + ship.size > board.size:  # Out of bounds check for East
+                    print("Ship goes out of bounds to the East! Please try again.")
+                    continue
+                # Check for overlap
+                for i in range(ship.size):
+                    if board.grid[row][col + i] != '~':
+                        overlap = True
+                        break
+                if overlap:
+                    print("Ship overlaps with another ship! Please try again.")
+                    continue
+                horizontal = True
+                if board.place_ship(ship, row, col, horizontal):
+                    print(f"{ship.name} placed successfully!")
+                    break
+
+            elif direction == 'W':
+                if col - (ship.size - 1) < 0:  # Out of bounds check for West
+                    print("Ship goes out of bounds to the West! Please try again.")
+                    continue
+                # Check for overlap
+                for i in range(ship.size):
+                    if board.grid[row][col - i] != '~':
+                        overlap = True
+                        break
+                if overlap:
+                    print("Ship overlaps with another ship! Please try again.")
+                    continue
+                horizontal = True
+                if board.place_ship(ship, row, col - (ship.size - 1), horizontal):
+                    print(f"{ship.name} placed successfully!")
+                    break
+
+            elif direction == 'S':
+                if row + ship.size > board.size:  # Out of bounds check for South
+                    print("Ship goes out of bounds to the South! Please try again.")
+                    continue
+                # Check for overlap
+                for i in range(ship.size):
+                    if board.grid[row + i][col] != '~':
+                        overlap = True
+                        break
+                if overlap:
+                    print("Ship overlaps with another ship! Please try again.")
+                    continue
+                horizontal = False
+                if board.place_ship(ship, row, col, horizontal):
+                    print(f"{ship.name} placed successfully!")
+                    break
+
+            elif direction == 'N':
+                if row - (ship.size - 1) < 0:  # Out of bounds check for North
+                    print("Ship goes out of bounds to the North! Please try again.")
+                    continue
+                # Check for overlap
+                for i in range(ship.size):
+                    if board.grid[row - i][col] != '~':
+                        overlap = True
+                        break
+                if overlap:
+                    print("Ship overlaps with another ship! Please try again.")
+                    continue
+                horizontal = False
+                if board.place_ship(ship, row - (ship.size - 1), col, horizontal):
+                    print(f"{ship.name} placed successfully!")
+                    break
 
 
-# Main game loop that alternates turns between the player and the opponent.
-def game_loop(player_board, opponent_board):
+# Main game loop that alternates turns between Player 1 and Player 2.
+def game_loop(player1_board, player2_board):
     turn = 1
+    recent_move_message = ""  # Variable to store the recent move message
+
     while True:
-        print("\nYour board:")
-        player_board.display(show_ships=True)
-        print("\nOpponent's board:")
-        opponent_board.display()
+        print(f"\n--- Turn {turn} ---")
 
-        # Player's turn
+        # Player 1's turn
         if turn % 2 != 0:
-            print("\nPlayer's turn!")
-            if player_turn(player_board, opponent_board):
-                if all(ship.is_sunk() for ship in opponent_board.ships):
-                    print("Congratulations! You win!")
-                    break
-        # Opponent's turn
-        else:
-            print("\nOpponent's turn!")
-            if opponent_turn(opponent_board, player_board):
-                if all(ship.is_sunk() for ship in player_board.ships):
-                    print("Opponent wins! Better luck next time.")
-                    break
+            # Display the result of the last turn if available
+            if recent_move_message:
+                print(recent_move_message)
 
+            print("\nPlayer 1's turn:")
+            print("Your board:")
+            player1_board.display(show_ships=True)  # Show Player 1's board with their ships
+            print("\nOpponent's board (Player 2):")
+            player2_board.display()  # Show Player 2's board without revealing ships
+
+            # Player 1 makes a move
+            recent_move_message = player_turn(player2_board, "Player 1")
+            print(recent_move_message)  # Show result of Player 1's turn
+
+            if all(ship.is_sunk() for ship in player2_board.ships):
+                print("Player 1 wins! Congratulations!")
+                break
+
+        # Player 2's turn
+        else:
+            # Display the result of the last turn if available
+            if recent_move_message:
+                print(recent_move_message)
+
+            print("\nPlayer 2's turn:")
+            print("Your board:")
+            player2_board.display(show_ships=True)  # Show Player 2's board with their ships
+            print("\nOpponent's board (Player 1):")
+            player1_board.display()  # Show Player 1's board without revealing ships
+
+            # Player 2 makes a move
+            recent_move_message = player_turn(player1_board, "Player 2")
+            print(recent_move_message)  # Show result of Player 2's turn
+
+            if all(ship.is_sunk() for ship in player1_board.ships):
+                print("Player 2 wins! Congratulations!")
+                break
+
+        # Add a line break after each turn to avoid overlap
+        print("\n" * 2)
+        
         turn += 1
 
 
 # Player's turn to fire a shot.
-def player_turn(player_game_board, opponent_game_board):
+def player_turn(opponent_board, player_name):
     while True:
+        print(f"\n{player_name}, it's your turn to fire.")
         shot = input("Enter coordinates to fire (e.g., A5): ").upper()
-        if len(shot) < 2:
-            print("Invalid input! Please try again.")
+
+        # Validate input
+        if len(shot) < 2 or not shot[0].isalpha() or not shot[1:].isdigit():
+            print("Invalid input! Please enter a valid position like 'A5'.")
             continue
 
         col = ord(shot[0]) - 65  # Convert 'A' to 0, 'B' to 1, etc.
         row = int(shot[1:]) - 1  # Convert '5' to 4, etc.
 
-        if row < 0 or row >= opponent_game_board.size or col < 0 or col >= opponent_game_board.size:
+        if row < 0 or row >= opponent_board.size or col < 0 or col >= opponent_board.size:
             print("Position out of bounds! Please try again.")
             continue
 
-        return opponent_game_board.fire(row, col)
-
-
-# Opponent's turn to fire randomly at the player's board.
-def opponent_turn(opponent_game_board, player_game_board):
-    row, col = random.randint(0, player_game_board.size - 1), random.randint(0, player_game_board.size - 1)
-    print(f"Opponent fires at {chr(col + 65)}{row + 1}!")
-    return player_game_board.fire(row, col)
+        # Fire at the opponent's board
+        result = opponent_board.fire(row, col)
+        if result:
+            return f"{player_name} chose {shot} and hit!"
+        else:
+            return f"{player_name} chose {shot} and missed."
 
 
 # Main function to start the game.
