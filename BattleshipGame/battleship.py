@@ -4,9 +4,11 @@ This program implements a two-player Battleship game with manual ship placement.
 shots at each other's board, and the first player to sink all the opponent's ships wins.
 Inputs: Player inputs for placing ships and firing shots
 Output: Hits, misses, ship status (sunk or not)
-Author: Darshil Patel, Blake Smith, Ike Phillips, Brady Holland, Kansas Lees (add your names)
+Author: Darshil Patel, Blake Smith, Ike Phillips, Brady Holland, Kansas Lees
 Created on: 09/13/24
 """
+from os import system, name
+from time import sleep
 
 # Ship class represents a ship's properties: name, size, coordinates, and hits it has taken.
 class Ship:
@@ -31,7 +33,7 @@ class Board:
 
     def display(self, show_ships=False):
         """Display the board, optionally showing the ships."""
-        print("   " + " ".join([chr(65 + i) for i in range(self.size)]))  # Add an extra space here
+        print("   " + " ".join([chr(65 + i) for i in range(self.size)]))  # Print columns A-J
         for i in range(self.size):
             row = [self.grid[i][j] if show_ships or self.grid[i][j] not in 'S' else '~' for j in range(self.size)]
             print(f"{i + 1:2} " + " ".join(row))
@@ -64,7 +66,7 @@ class Board:
         """Fire a shot at the opponent's board and determine hit or miss."""
         if (row, col) in self.shots:
             print("Already fired at this location!")
-            return False
+            return 2
         self.shots.add((row, col))
         if self.grid[row][col] == 'S':
             print("Hit!")
@@ -74,7 +76,7 @@ class Board:
                     ship.hits += 1
                     if ship.is_sunk():
                         print(f"{ship.name} is sunk!")
-            return True
+            return 1
         else:
             print("Miss!")
             self.grid[row][col] = 'O'  # Mark miss on the board
@@ -106,13 +108,13 @@ def initialize_game():
         place_ship_manually(player1_board, ship)
 
     # Clear the screen or add some delay to avoid Player 2 seeing Player 1's board
-    print("\n" * 50)  # This clears the screen
+    clear_screen()  # This clears the screen
 
     # Player 2 places ships
     print("\nPlayer 2, place your ships:")
     for ship in ships:
         place_ship_manually(player2_board, ship)
-    print("\n" * 50)
+    clear_screen()
     return player1_board, player2_board
 
 
@@ -264,7 +266,7 @@ def game_loop(player1_board, player2_board):
                 break
 
         # Add a line break after each turn to avoid overlap
-        print("\n" * 2)
+        clear_screen()
         
         turn += 1
 
@@ -289,11 +291,23 @@ def player_turn(opponent_board, player_name):
 
         # Fire at the opponent's board
         result = opponent_board.fire(row, col)
-        if result:
+
+        if result == 1:
+            # print(f"{player_name} chose {shot} and hit!")
+            sleep(1)
+            clear_screen()
             return f"{player_name} chose {shot} and hit!"
+        elif result == 2:
+            print("You've already fired at this location!")
+            continue
         else:
+            # print(f"{player_name} chose {shot} and missed!")
+            sleep(1)
+            clear_screen()
             return f"{player_name} chose {shot} and missed."
 
+def clear_screen():
+    system('cls' if name == 'nt' else 'clear')
 
 # Main function to start the game.
 if __name__ == "__main__":
