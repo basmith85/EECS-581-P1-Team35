@@ -31,7 +31,7 @@ class Board:
 
     def display(self, show_ships=False):
         """Display the board, optionally showing the ships."""
-        print("  " + " ".join([chr(65 + i) for i in range(self.size)]))  # Print columns A-J
+        print("   " + " ".join([chr(65 + i) for i in range(self.size)]))  # Add an extra space here
         for i in range(self.size):
             row = [self.grid[i][j] if show_ships or self.grid[i][j] not in 'S' else '~' for j in range(self.size)]
             print(f"{i + 1:2} " + " ".join(row))
