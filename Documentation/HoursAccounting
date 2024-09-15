@@ -14,3 +14,7 @@ with and placement of ships by players 1 and 2). Involved creating player boards
 and writing functions to check valid ship placements, place ships, print a player's board, and
 clear the screen.
 ---------------------------------------------------------------------------------------------
+Date: 9/15/24
+Hours: 1
+Description: Final touches and Quality Assurance. Squashed some bugs and made sure the game was ready to submit.
+---------------------------------------------------------------------------------------------
