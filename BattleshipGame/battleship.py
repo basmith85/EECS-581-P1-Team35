@@ -9,6 +9,7 @@ Created on: 09/13/24
 """
 from os import system, name
 from time import sleep
+import random
 
 # Ship class represents a ship's properties: name, size, coordinates, and hits it has taken.
 class Ship:
@@ -89,12 +90,52 @@ class Board:
             return False
 
 
-# Initialize the game by setting up boards and placing ships for both players.
-def initialize_game():
-    player1_board = Board()
-    player2_board = Board()
+# AI class for the opponent.
+class AI:
+    def __init__(self, board, difficulty):
+        self.board = board
+        self.difficulty = difficulty
+        self.last_shot = None
+        self.previous_shots = []
 
-    # Ask the players how many ships they want to play with making sure that the number of ships is within the given limit and erroring if not.
+    def make_move(self):
+        """AI makes a move based on difficulty."""
+        if self.difficulty == 'easy':
+            return self._easy_move()
+        elif self.difficulty == 'medium':
+            return self._medium_move()
+        elif self.difficulty == 'hard':
+            return self._hard_move()
+
+    def _easy_move(self):
+        """Easy AI makes random moves."""
+        # INSERT
+
+    def _medium_move(self):
+        """Medium AI makes semi-random moves, prioritizing areas with hits."""
+        # INSERT
+
+    def _hard_move(self):
+        """Hard AI uses a more strategic approach."""
+        # INSERT
+
+
+def initialize_game():
+    """Initialize the game: prompt for difficulty, place ships for player and AI."""
+    clear_screen()
+    print("Welcome to Battleship!")
+    print("Choose AI difficulty (easy, medium, hard):")
+    
+    while True:
+        difficulty = input().lower()
+        if difficulty in ['easy', 'medium', 'hard']:
+            break
+        print("Invalid choice! Please enter 'easy', 'medium', or 'hard'.")
+
+    player_board = Board()
+    ai_board = Board()
+    ai = AI(ai_board, difficulty)
+
     while True:
         try:
             num_ships = int(input("Enter the number of ships (1 to 5): "))
@@ -105,26 +146,26 @@ def initialize_game():
         except ValueError:
             print("Invalid input! Please enter a number between 1 and 5.")
 
-    # Create ships based on the number chosen
     ships = [Ship(f"Ship {i}", i) for i in range(1, num_ships + 1)]
 
-    # Player 1 places ships
-    print("\nPlayer 1, place your ships:")
+    print("\nPlayer, place your ships:")
     for ship in ships:
-        place_ship_manually(player1_board, ship)
+        place_ship_manually(player_board, ship)
 
-    # Clear the screen or add some delay to avoid Player 2 seeing Player 1's board
-    clear_screen()  # This clears the screen
-
-    # Player 2 places ships
-    print("\nPlayer 2, place your ships:")
+    print("\nAI is placing ships...")
     for ship in ships:
-        place_ship_manually(player2_board, ship)
-    clear_screen()
-    return player1_board, player2_board
+        while True:
+            row = random.randint(0, ai_board.size - 1)
+            col = random.randint(0, ai_board.size - 1)
+            horizontal = random.choice([True, False])
+            if ai_board.place_ship(ship, row, col, horizontal):
+                break
 
-# allows for ships to be manually placed on to the board by the players. 
+    return player_board, ai_board, ai
+
+
 def place_ship_manually(board, ship):
+    """Allow player to place a ship on their board."""
     board.display(show_ships=True)
     print(f"\nPlace your {ship.name} (size {ship.size})")
 
@@ -231,107 +272,61 @@ def place_ship_manually(board, ship):
                     break
 
 
-# Main game loop that alternates turns between Player 1 and Player 2.
-def game_loop(player1_board, player2_board):
-    turn = 1
-    recent_move_message = ""  # Variable to store the recent move message
-
-    while True:
-        print(f"\n--- Turn {turn} ---")
-
-        # Player 1's turn
-        if turn % 2 != 0:
-            # Display the result of the last turn if available
-            if recent_move_message:
-                print(recent_move_message)
-
-            print("\nPlayer 1's turn:")
-            print("Your board:")
-            player1_board.display(show_ships=True)  # Show Player 1's board with their ships
-            print("\nOpponent's board (Player 2):")
-            player2_board.display()  # Show Player 2's board without revealing ships
-
-            # Player 1 makes a move
-            recent_move_message = player_turn(player2_board, "Player 1")
-            print(recent_move_message)  # Show result of Player 1's turn
-
-            # ends the game if all of player 2's ships are sunk
-            if all(ship.is_sunk() for ship in player2_board.ships):
-                print("Player 1 wins! Congratulations!")
-                break
-
-        # Player 2's turn
-        else:
-            # Display the result of the last turn if available
-            if recent_move_message:
-                print(recent_move_message)
-
-            print("\nPlayer 2's turn:")
-            print("Your board:")
-            player2_board.display(show_ships=True)  # Show Player 2's board with their ships
-            print("\nOpponent's board (Player 1):")
-            player1_board.display()  # Show Player 1's board without revealing ships
-
-            # Player 2 makes a move
-            recent_move_message = player_turn(player1_board, "Player 2")
-            print(recent_move_message)  # Show result of Player 2's turn
-
-            # ends the game if all of player 1's ships are sunk
-            if all(ship.is_sunk() for ship in player1_board.ships):
-                print("Player 2 wins! Congratulations!")
-                break
-
-        # Add a line break after each turn to avoid overlap
-        clear_screen()
-        
-        #increments the amount of turns the game has lasted
-        turn += 1
-
-
-# Player's turn to fire a shot.
-def player_turn(opponent_board, player_name):
-    while True:
-        # prompts the player to enter the coordinates of where they want to fire
-        print(f"\n{player_name}, it's your turn to fire.")
-        shot = input("Enter coordinates to fire (e.g., A5): ").upper()
-
-        # determines if the given coordinates are a valid input, prompting the player to try again if they are not.
-        if len(shot) < 2 or not shot[0].isalpha() or not shot[1:].isdigit():
-            print("Invalid input! Please enter a valid position like 'A5'.")
-            continue
-
-        col = ord(shot[0]) - 65  # Convert 'A' to 0, 'B' to 1, etc.
-        row = int(shot[1:]) - 1  # Convert '5' to 4, etc.
-
-        # determines if the coordinates are within the size of the board
-        if row < 0 or row >= opponent_board.size or col < 0 or col >= opponent_board.size:
-            print("Position out of bounds! Please try again.")
-            continue
-
-        # Fire at the opponent's board
-        result = opponent_board.fire(row, col)
-
-        # displays which player shot and where, stating if the spot was a hit or a miss
-        # the player is also prompted to try again if they have already fired on the spot they are trying to target.
-        if result == 1:
-            # print(f"{player_name} chose {shot} and hit!")
-            sleep(1)
-            clear_screen()
-            return f"{player_name} chose {shot} and hit!"
-        elif result == 2:
-            print("You've already fired at this location!")
-            continue
-        else:
-            # print(f"{player_name} chose {shot} and missed!")
-            sleep(1)
-            clear_screen()
-            return f"{player_name} chose {shot} and missed."
-
-# clears the screen to keep players from seeing eachother's screens. 
 def clear_screen():
-    system('cls' if name == 'nt' else 'clear')
+    """Clear the console screen based on the operating system."""
+    if name == 'nt':
+        _ = system('cls')
+    else:
+        _ = system('clear')
 
-# Main function to start the game, creates the boards and begins the game loop.
+
+def play_game(player_board, ai_board, ai):
+    """Start the game and manage turns between player and AI."""
+    while True:
+        print("\nPlayer's Board:")
+        player_board.display(show_ships=True)
+        print("\nAI's Board:")
+        ai_board.display()
+
+        print("\nYour turn! Enter the coordinates to fire (e.g., A5):")
+        while True:
+            pos = input().upper()
+            if len(pos) < 2 or not pos[0].isalpha() or not pos[1:].isdigit():
+                print("Invalid input format! Please enter a valid position like 'A5'.")
+                continue
+
+            col = ord(pos[0]) - 65
+            row = int(pos[1:]) - 1
+
+            if row < 0 or row >= player_board.size or col < 0 or col >= player_board.size:
+                print("Position out of bounds! Please try again.")
+                continue
+
+            result = ai_board.fire(row, col)
+            if result == 2:
+                continue  # Position already shot
+            break
+
+        if all(ship.is_sunk() for ship in ai_board.ships):
+            print("Congratulations! You've sunk all the AI's ships!")
+            return
+
+        print("\nAI's turn...")
+        row, col = ai.make_move()
+        print(f"AI fires at {chr(65 + col)}{row + 1}")
+        result = player_board.fire(row, col)
+        
+        if all(ship.is_sunk() for ship in player_board.ships):
+            print("AI wins! All your ships are sunk.")
+            return
+
+        sleep(1)  # Add delay for the AI's turn
+
+
+def main():
+    player_board, ai_board, ai = initialize_game()
+    play_game(player_board, ai_board, ai)
+
+
 if __name__ == "__main__":
-    player_board, opponent_board = initialize_game()
-    game_loop(player_board, opponent_board)
+    main()
