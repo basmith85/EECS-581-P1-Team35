@@ -98,18 +98,22 @@ class AI:
         self.last_shot = None
         self.previous_shots = []
 
-    def make_move(self):
+    def make_move(self, player_board):
         """AI makes a move based on difficulty."""
         if self.difficulty == 'easy':
-            return self._easy_move()
+            return self._easy_move(player_board)
         elif self.difficulty == 'medium':
             return self._medium_move()
         elif self.difficulty == 'hard':
             return self._hard_move()
 
-    def _easy_move(self):
+    def _easy_move(self, player_board):
         """Easy AI makes random moves."""
-        # INSERT
+        while True:
+            row = random.randint(0, player_board.size - 1)
+            col = random.randint(0, player_board.size - 1)
+            if (row, col) not in player_board.shots:
+                return player_board.make_move(row, col)
 
     def _medium_move(self):
         """Medium AI makes semi-random moves, prioritizing areas with hits."""
