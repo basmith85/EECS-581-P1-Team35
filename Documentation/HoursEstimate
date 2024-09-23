@@ -1,21 +1,25 @@
-Total Time: 4 hours estimated
+Total Time: 12 hours estimated
 
-Game Setup: 1.5 hours 
-- Laying the foundation of the entire project
-- Necessitates time given to strategy/planning in addition to actual implementation
+Review Code and refresh/learn Racket Fundementals : 2 hours
+- Make sure all functionality from Project 1 is met and understand how to work with Racket
+- Hard to know how long it will take (depends on effectiveness of other team)
 
-Playing the Game: 30 minutes
-- Designing player vs player style and user inputs/outputs
-- Should be relatively quick once game setup is complete
+Set up Github for Project 2: 30 minutes
+- Create non-master branch with new documentation and project code
+- Should be fairly simple/quick
 
-Destroying a Ship: 30 minutes
-- Differentiating between partially hit ship and destroyed ship
-- Should also be relativley quick
+UML Custom Feature Design: 1 hour
+- Create visual model to show relationship of new feature to previous code
+- Necessitates time given to both deciding on and designing new feature
 
-Player's View: 1 hour
-- Requires designing an interface to be shown after each turn during the game
-- Involves both layout design and logical implementation
+Adding AI Component: 4 hours
+- Implementing a single-player game mode where the user plays an AI with multiple possible difficulty levels
+- Should take a while to implement each of Easy, Medium, and Hard game modes
 
-Game End: 30 minutes
-- Making sure game knows when to stop and displays winning message
-- Will also provide finishing touches on other sections
+Adding Custom Feature: 2 hours
+- Implementing special shot that fires at a whole row or column (can only be used by each player once a game)
+- Should be simpler than AI component but still will require some time
+
+Final Touches/Error Testing: 2.5 hours
+- Making sure program runs correctly and is fully implemented with new additions
+- Could be much shorter or much longer depending on how many bugs we run into
