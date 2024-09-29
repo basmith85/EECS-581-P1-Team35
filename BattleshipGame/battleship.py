@@ -71,16 +71,18 @@ class Board:
         self.ships.append(ship)  # adds the ship to the list of ships on the board
         return True
 
-    def fire(self, row, col):
+    def fire(self, row, col, bomb=False):
         """Fire a shot at the opponent's board and determine hit or miss."""
         # determines if a spot on the board has been fired on already by a player.
         if (row, col) in self.shots:
-            print("Already fired at this location!")
+            if not bomb:
+                print("Already fired at this location!")
             return 2
         # "fires" the shot on the board, determining if it is a hit or not and adding the shot to the boards list of shots.
         self.shots.add((row, col))
         if self.grid[row][col] == 'S':
-            print("Hit!")
+            if not bomb:
+                print("Hit!")
             self.grid[row][col] = 'X'  # Mark hit on the board
             for ship in self.ships:
                 if (row, col) in ship.coordinates:
@@ -90,7 +92,8 @@ class Board:
                         return 3
             return 1
         else:
-            print("Miss!")
+            if not bomb:
+                print("Miss!")
             self.grid[row][col] = 'O'  # Mark miss on the board
             return False
 
@@ -112,6 +115,7 @@ class AI:
                 placed = self.board.place_ship(ship, row, col, horizontal=(direction in ['E', 'W']))
 
     def fire(self, opponent_board):
+        from random import randint
 
         def get_random_shot():
             while True:
@@ -348,16 +352,16 @@ def game_loop(player_board, ai_board, ai):
 # Function to handle bomb firing affecting the entire row and column
 def fire_bomb(opponent_board, row, col):
     hits = []
-    
+
     # Fire bomb in the entire row
     for c in range(opponent_board.size):  # Iterate over the entire row
-        result = opponent_board.fire(row, c)
+        result = opponent_board.fire(row, c, True)
         if result in (1, 3):  # Hit
             hits.append((row, c))
-    
+
     # Fire bomb in the entire column
     for r in range(opponent_board.size):  # Iterate over the entire column
-        result = opponent_board.fire(r, col)
+        result = opponent_board.fire(r, col, True)
         if result in (1, 3):  # Hit
             hits.append((r, col))
 
@@ -429,10 +433,6 @@ def player_turn(opponent_board, player_name, bomb_used):
 
         else:
             print("Invalid choice! Please choose 'shot' or 'bomb'.")
-
-# clears the screen to keep players from seeing each other's screens.
-#def clear_screen():
-    #system('cls' if name == 'nt' else 'clear')
 
 
 # Main function to start the game, creates the boards and begins the game loop.
