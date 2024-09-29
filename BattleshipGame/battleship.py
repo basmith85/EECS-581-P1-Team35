@@ -181,16 +181,18 @@ def initialize_game():
         except ValueError:
             print("Invalid input! Please enter a number between 1 and 5.")
 
-    ships = [Ship(f"Ship {i}", i) for i in range(1, num_ships + 1)]
+    player_ships = [Ship(f"Ship {i}", i) for i in range(1, num_ships + 1)]
 
     print("\nPlayer, place your ships:")
-    for ship in ships:
+    for ship in player_ships:
         place_ship_manually(player_board, ship)
 
     #clear_screen()
 
+    ai_ships = [Ship(f"Ship {i}", i) for i in range(1, num_ships + 1)]
+
     ai = AI(ai_board, difficulty)
-    ai.place_ships(ships)
+    ai.place_ships(ai_ships)
     if DBG:
         ai.board.display(show_ships=True)
     return player_board, ai_board, ai
