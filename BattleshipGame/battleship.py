@@ -7,11 +7,12 @@ Output: Hits, misses, ship status (sunk or not)
 Author: Darshil Patel, Blake Smith, Ike Phillips, Brady Holland, Kansas Lees
 Created on: 09/13/24
 """
-from os import system, name
 from time import sleep
-import random
+from random import randint, choice
+directions = ['N', 'S', 'E', 'W']
+import sys
 
-
+DBG = False
 
 # Ship class represents a ship's properties: name, size, coordinates, and hits it has taken.
 class Ship:
@@ -102,9 +103,6 @@ class AI:
 
     def place_ships(self, ships):
         print("\nAI is placing ships...")
-        sleep(2)
-        from random import randint, choice
-        directions = ['N', 'S', 'E', 'W']
         for ship in ships:
             placed = False
             while not placed:
@@ -114,7 +112,6 @@ class AI:
                 placed = self.board.place_ship(ship, row, col, horizontal=(direction in ['E', 'W']))
 
     def fire(self, opponent_board):
-        from random import randint, choice
 
         def get_random_shot():
             while True:
@@ -194,6 +191,8 @@ def initialize_game():
 
     ai = AI(ai_board, difficulty)
     ai.place_ships(ships)
+    if DBG:
+        ai.board.display(show_ships=True)
     return player_board, ai_board, ai
 
 
@@ -374,10 +373,6 @@ def player_turn(opponent_board, player_name, bomb_used):
             choice = "shot"  # Automatically set to shot if bomb is used
 
         if choice == "bomb":
-            # Confirm bomb usage
-            if bomb_used:
-                print("You've already used your bomb! Please fire a regular shot.")
-                continue
 
             # Prompt for bomb coordinates
             shot = input("Enter coordinates to fire bomb (e.g., A5): ").upper()
@@ -440,5 +435,7 @@ def player_turn(opponent_board, player_name, bomb_used):
 
 # Main function to start the game, creates the boards and begins the game loop.
 if __name__ == "__main__":
+    if len(sys.argv) >= 2:
+        DBG = int(sys.argv[1]) == 1
     player_board, ai_board, ai = initialize_game()
     game_loop(player_board, ai_board, ai)
