@@ -9,6 +9,7 @@ Created on: 09/13/24
 """
 from os import system, name
 from time import sleep
+import random
 
 
 
@@ -308,6 +309,7 @@ def place_ship_manually(board, ship):
 def game_loop(player_board, ai_board, ai):
     turn = 1
     recent_move_message = ""
+    bomb_used = False  # Track if the bomb has been used
 
     while True:
         print(f"\n--- Turn {turn} ---")
@@ -322,16 +324,13 @@ def game_loop(player_board, ai_board, ai):
             print("\nOpponent's board (AI):")
             ai_board.display()
 
-            recent_move_message = player_turn(ai_board, "Player")
-            print(recent_move_message)
+            recent_move_message = player_turn(ai_board, "Player", bomb_used)
+            bomb_used = recent_move_message.get("bomb_used", bomb_used)  # Update bomb_used from player's turn message
 
             if all(ship.is_sunk() for ship in ai_board.ships):
                 print("Player wins! Congratulations!")
                 break
         else:
-            #if recent_move_message:
-                #print(recent_move_message)
-
             print("\nAI's turn:")
             sleep(2)
             result = ai.fire(player_board)
@@ -341,50 +340,98 @@ def game_loop(player_board, ai_board, ai):
             if all(ship.is_sunk() for ship in player_board.ships):
                 print("AI wins! Better luck next time!")
                 break
+
         sleep(2)
-        #clear_screen()
         turn += 1
 
+# Function to handle bomb firing affecting the entire row and column
+def fire_bomb(opponent_board, row, col):
+    hits = []
+    
+    # Fire bomb in the entire row
+    for c in range(opponent_board.size):  # Iterate over the entire row
+        result = opponent_board.fire(row, c)
+        if result in (1, 3):  # Hit
+            hits.append((row, c))
+    
+    # Fire bomb in the entire column
+    for r in range(opponent_board.size):  # Iterate over the entire column
+        result = opponent_board.fire(r, col)
+        if result in (1, 3):  # Hit
+            hits.append((r, col))
+
+    return hits
 
 # Player's turn to fire a shot.
-def player_turn(opponent_board, player_name):
+def player_turn(opponent_board, player_name, bomb_used):
     while True:
-        # prompts the player to enter the coordinates of where they want to fire
         print(f"\n{player_name}, it's your turn to fire.")
-        shot = input("Enter coordinates to fire (e.g., A5): ").upper()
 
-        # determines if the given coordinates are a valid input, prompting the player to try again if they are not.
-        if len(shot) < 2 or not shot[0].isalpha() or not shot[1:].isdigit():
-            print("Invalid input! Please enter a valid position like 'A5'.")
-            continue
-
-        col = ord(shot[0]) - 65  # Convert 'A' to 0, 'B' to 1, etc.
-        row = int(shot[1:]) - 1  # Convert '5' to 4, etc.
-
-        # determines if the coordinates are within the size of the board
-        if row < 0 or row >= opponent_board.size or col < 0 or col >= opponent_board.size:
-            print("Position out of bounds! Please try again.")
-            continue
-
-        # Fire at the opponent's board
-        result = opponent_board.fire(row, col)
-
-        # displays which player shot and where, stating if the spot was a hit or a miss
-        # the player is also prompted to try again if they have already fired on the spot they are trying to target.
-        if result == 1 or result == 3:
-            # print(f"{player_name} chose {shot} and hit!")
-            sleep(1)
-            #clear_screen()
-            return f"{player_name} chose {shot} and hit!"
-        elif result == 2:
-            print("You've already fired at this location!")
-            continue
+        # Prompt for action based on whether the bomb has been used
+        if not bomb_used:
+            choice = input("Choose to fire a shot or use a bomb (shot/bomb): ").lower()
         else:
-            # print(f"{player_name} chose {shot} and missed!")
-            sleep(1)
-            #clear_screen()
-            return f"{player_name} chose {shot} and missed."
+            choice = "shot"  # Automatically set to shot if bomb is used
 
+        if choice == "bomb":
+            # Confirm bomb usage
+            if bomb_used:
+                print("You've already used your bomb! Please fire a regular shot.")
+                continue
+
+            # Prompt for bomb coordinates
+            shot = input("Enter coordinates to fire bomb (e.g., A5): ").upper()
+
+            # Validate input
+            if len(shot) < 2 or not shot[0].isalpha() or not shot[1:].isdigit():
+                print("Invalid input! Please enter a valid position like 'A5'.")
+                continue
+
+            col = ord(shot[0]) - 65
+            row = int(shot[1:]) - 1
+
+            if row < 0 or row >= opponent_board.size or col < 0 or col >= opponent_board.size:
+                print("Position out of bounds! Please try again.")
+                continue
+
+            # Fire the bomb
+            hit_positions = fire_bomb(opponent_board, row, col)
+            bomb_used = True  # Mark the bomb as used
+
+            if hit_positions:
+                hit_details = ", ".join([f"{chr(col + 65)}{row + 1}" for row, col in hit_positions])
+                print(f"{player_name} used a bomb and hit: {hit_details}!")
+            else:
+                print(f"{player_name} used a bomb but missed all targets.")
+            return {"bomb_used": bomb_used}  # End turn after bomb use
+
+        elif choice == "shot":
+            shot = input("Enter coordinates to fire (e.g., A5): ").upper()
+
+            if len(shot) < 2 or not shot[0].isalpha() or not shot[1:].isdigit():
+                print("Invalid input! Please enter a valid position like 'A5'.")
+                continue
+
+            col = ord(shot[0]) - 65
+            row = int(shot[1:]) - 1
+
+            if row < 0 or row >= opponent_board.size or col < 0 or col >= opponent_board.size:
+                print("Position out of bounds! Please try again.")
+                continue
+
+            result = opponent_board.fire(row, col)
+
+            if result == 1 or result == 3:
+                print(f"{player_name} chose {shot} and hit!")
+            elif result == 2:
+                print("You've already fired at this location!")
+                continue
+            else:
+                print(f"{player_name} chose {shot} and missed.")
+            return {"bomb_used": bomb_used}  # End turn after regular shot
+
+        else:
+            print("Invalid choice! Please choose 'shot' or 'bomb'.")
 
 # clears the screen to keep players from seeing each other's screens.
 #def clear_screen():
