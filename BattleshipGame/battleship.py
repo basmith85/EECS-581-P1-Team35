@@ -4,11 +4,11 @@ This program implements a two-player Battleship game with manual ship placement.
 shots at each other's board, and the first player to sink all the opponent's ships wins.
 Inputs: Player inputs for placing ships and firing shots
 Output: Hits, misses, ship status (sunk or not)
-Sources: Group 6, ChatGPT
+Sources: Group 6, ChatGPT, Group 35
 Author: Zach Alwin, Kristin Böckmann, Lisa Phan, Nicholas Hausler, Vinayak Jha
 Created on: 09/16/2024
 """
-# Module Importing
+# Module Importing (Authored by Group 35, Group 6, ChatGPT)
 from time import sleep
 from random import randint, choice
 directions = ['N', 'S', 'E', 'W']
@@ -16,31 +16,31 @@ import sys
 
 DBG = False
 
-# Ship class represents a ship's properties: name, size, coordinates, and hits it has taken
+# Ship class represents a ship's properties: name, size, coordinates, and hits it has taken (Authored by Group 35, Group 6, ChatGPT)
 class Ship:
-    # creates the init function for the ship class defining name, size, coordinates, and hits
+    # creates the init function for the ship class defining name, size, coordinates, and hits (Authored by Group 35, Group 6, ChatGPT)
     def __init__(self, name, size):
         self.name = name
         self.size = size
         self.coordinates = []  # List of tuples for the ship's coordinates
         self.hits = 0  # Track the number of hits on the ship
 
-    # function to determine if a ship has been sunk or not
+    # function to determine if a ship has been sunk or not (Authored by Group 35, Group 6, ChatGPT)
     def is_sunk(self):
         """Returns True if the ship is fully sunk (i.e., hits equal its size)."""
         return self.hits == self.size
 
 
-# Board class represents the game board for both the player and opponent
+# Board class represents the game board for both the player and opponent (Authored by Group 35, Group 6, ChatGPT)
 class Board:
-    # creates the init function for the board class defining size, grid, ships, and shots
+    # creates the init function for the board class defining size, grid, ships, and shots (Authored by Group 35, Group 6, ChatGPT)
     def __init__(self, size=10):
         self.size = size
         self.grid = [['~' for _ in range(size)] for _ in range(size)]  # '~' represents water
         self.ships = []  # List of ships placed on the board
         self.shots = set()  # Keep track of fired shots
 
-    def display(self, show_ships=False):
+    def display(self, show_ships=False):  # (Authored by Group 35, Group 6, ChatGPT)
         """Display the board, optionally showing the ships."""
         print("   " + " ".join([chr(65 + i) for i in range(self.size)]))  # Print columns A-J
         for i in range(self.size):
@@ -48,7 +48,7 @@ class Board:
                    range(self.size)]  # prints the rows as either ships or water
             print(f"{i + 1:2} " + " ".join(row))
 
-    # places ships on the board at the given row and column, boolean value to determine if the ship is placed horizontally or not
+    # places ships on the board at the given row and column, boolean value to determine if the ship is placed horizontally or not (Authored by Group 35, Group 6, ChatGPT)
     def place_ship(self, ship, start_row, start_col, horizontal=True):
         """Place a ship on the board at the specified row and column."""
         if horizontal:  # horizontal ship
@@ -73,7 +73,7 @@ class Board:
         self.ships.append(ship)  # Adds the ship to the list of ships on the board
         return True
 
-    def fire(self, row, col, bomb=False):
+    def fire(self, row, col, bomb=False):  # (Authored by Group 35, Group 6, ChatGPT)
         """Fire a shot at the opponent's board and determine hit or miss."""
         # Determines if a spot on the board has been fired on already by a player
         if (row, col) in self.shots:
@@ -98,7 +98,7 @@ class Board:
                 print("Miss!")
             self.grid[row][col] = 'O'  # Mark miss on the board
             return False
-# The AI class defines the behavior of the computer opponent, including placing ships and firing at the player's board
+# The AI class defines the behavior of the computer opponent, including placing ships and firing at the player's board (Authored by Group 35, Group 6, ChatGPT)
 class AI:
     # Initializes the AI with the game board and difficulty level
     def __init__(self, board, difficulty):
@@ -107,7 +107,7 @@ class AI:
         self.last_hit = None  # Tracks the last hit made by the AI to improve targeting in medium/hard modes
         self.possible_targets = []  # Stores potential target coordinates for intelligent shots
 
-    # Places AI ships randomly on the board. Ships will be placed without overlapping or going out of bounds
+    # Places AI ships randomly on the board. Ships will be placed without overlapping or going out of bounds (Authored by Group 35, Group 6, ChatGPT)
     def place_ships(self, ships):
         print("\nAI is placing ships...")  # Notify that AI is placing ships
         for ship in ships:  # Loop over each ship that needs to be placed
@@ -118,11 +118,11 @@ class AI:
                 direction = choice(directions)  # Randomly choose the direction to place the ship
                 placed = self.board.place_ship(ship, row, col, horizontal=(direction in ['E', 'W']))  # Attempt to place the ship
 
-    # AI fires at the opponent's board. The behavior varies based on the difficulty level
+    # AI fires at the opponent's board. The behavior varies based on the difficulty level (Authored by Group 35, Group 6, ChatGPT)
     def fire(self, opponent_board):
         from random import randint  # Import random number generator
 
-        # Function to get a random valid shot
+        # Function to get a random valid shot (Authored by Group 35, Group 6, ChatGPT)
         def get_random_shot():
             while True:
                 row = randint(0, opponent_board.size - 1)  # Random row
@@ -130,18 +130,18 @@ class AI:
                 if (row, col) not in opponent_board.shots:  # Check if this position was not shot before
                     return row, col  # Return the random shot
 
-        # Returns a list of valid adjacent coordinates around a given row and column
+        # Returns a list of valid adjacent coordinates around a given row and column (Authored by Group 35, Group 6, ChatGPT)
         def get_adjacent_shots(row, col):
             directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Possible directions (N, S, E, W)
             return [(row + dr, col + dc) for dr, dc in directions if 0 <= row + dr < opponent_board.size and 0 <= col + dc < opponent_board.size]
 
-        # Match case to decide the AI's firing strategy based on the difficulty level
+        # Match case to decide the AI's firing strategy based on the difficulty level (Authored by Group 35, Group 6, ChatGPT)
         match self.difficulty.lower():
             case 'easy':  # Easy mode: Random shots with no strategy
                 row, col = get_random_shot()  # Get a random shot
                 return opponent_board.fire(row, col)  # Fire at the chosen coordinates
 
-            case 'medium':  # Medium mode: Targets around previous hits
+            case 'medium':  # Medium mode: Targets around previous hits (Authored by Group 35, Group 6, ChatGPT)
                 if self.last_hit and not self.possible_targets:  # If there's a last hit and no targets, get adjacent ones
                     self.possible_targets = get_adjacent_shots(*self.last_hit)
                 if self.possible_targets:  # If there are possible targets, shoot at the next one
@@ -154,7 +154,7 @@ class AI:
                 else:  # If no last hit or possible targets, pick a random shot
                     row, col = get_random_shot()
 
-                result = opponent_board.fire(row, col)  # Fire at the determined coordinates
+                result = opponent_board.fire(row, col)  # Fire at the determined coordinates 
                 if result == 1:  # Hit but not sunk
                     self.last_hit = (row, col)  # Store this hit as the last hit
                 elif result == 3:  # Ship sunk
@@ -169,12 +169,12 @@ class AI:
                             return opponent_board.fire(row, col)
 
 
-# Sets up the game by initializing the player and AI boards, and places ships for both sides.
+# Sets up the game by initializing the player and AI boards, and places ships for both sides. (Authored by Group 35, Group 6, ChatGPT)
 def initialize_game():
     player_board = Board()  # Create a new board for the player
     ai_board = Board()  # Create a new board for the AI
 
-    # Loop to get the difficulty level input from the user
+    # Loop to get the difficulty level input from the user (Authored by Group 35, Group 6, ChatGPT)
     while True:
         try:
             difficulty = input("Enter AI difficulty ('Easy', 'Medium', 'Hard'): ").lower()  # Prompt for difficulty
@@ -185,7 +185,7 @@ def initialize_game():
         except ValueError:
             print("Invalid input! Please enter 'Easy', 'Medium', or 'Hard'.")
 
-    # Loop to get the number of ships the player wants.
+    # Loop to get the number of ships the player wants. (Authored by Group 35, Group 6, ChatGPT)
     while True:
         try:
             num_ships = int(input("Enter the number of ships (1 to 5): "))  # Prompt for number of ships
@@ -213,12 +213,12 @@ def initialize_game():
     return player_board, ai_board, ai  # Return initialized boards and AI instance
 
 
-# Allows the player to manually place a ship on the board
+# Allows the player to manually place a ship on the board (Authored by Group 35, Group 6, ChatGPT)
 def place_ship_manually(board, ship):
     board.display(show_ships=True)  # Display the current state of the board
     print(f"\nPlace your {ship.name} (size {ship.size})")  # Prompt the player to place their ship
 
-    # Continue prompting until the ship is placed correctly
+    # Continue prompting until the ship is placed correctly (Authored by Group 35, Group 6, ChatGPT)
     while True:
         pos = input("Enter starting position (e.g., A5): ").upper()  # Get the starting position
         if len(pos) < 2 or not pos[0].isalpha() or not pos[1:].isdigit():  # Validate input format
@@ -233,7 +233,7 @@ def place_ship_manually(board, ship):
             print("Position out of bounds! Please try again.")
             continue
 
-        # If the ship is of size 1, no direction choice is needed.
+        # If the ship is of size 1, no direction choice is needed. (Authored by Group 35, Group 6, ChatGPT)
         if ship.size == 1:
             if board.place_ship(ship, row, col, horizontal=True):  # Attempt to place the ship.
                 print(f"{ship.name} placed successfully!")
@@ -247,7 +247,7 @@ def place_ship_manually(board, ship):
 
             overlap = False  # Track if the ship overlaps with another.
 
-            # Handle ship placement based on the chosen direction.
+            # Handle ship placement based on the chosen direction. (Authored by Group 35, Group 6, ChatGPT)
             if direction == 'E':
                 if col + ship.size > board.size:  # Check if the ship goes out of bounds to the East.
                     print("Ship goes out of bounds to the East! Please try again.")
@@ -264,7 +264,7 @@ def place_ship_manually(board, ship):
                     print(f"{ship.name} placed successfully!")
                     break
                     
-# Main game loop that alternates turns between Player 1 and Player 2.
+# Main game loop that alternates turns between Player 1 and Player 2. (Authored by Group 35, Group 6, ChatGPT)
 def game_loop(player_board, ai_board, ai):
     turn = 1
     recent_move_message = ""
@@ -273,7 +273,7 @@ def game_loop(player_board, ai_board, ai):
     while True:
         print(f"\n--- Turn {turn} ---")
 
-        # Print the most recent move if the game still continues
+        # Print the most recent move if the game still continues (Authored by Group 35, Group 6, ChatGPT)
         if turn % 2 != 0:
             if recent_move_message:
                 print(recent_move_message)
@@ -287,7 +287,7 @@ def game_loop(player_board, ai_board, ai):
             recent_move_message = player_turn(ai_board, "Player", bomb_used)
             bomb_used = recent_move_message.get("bomb_used", bomb_used)  # Update bomb_used from player's turn message
 
-            # Print message for a user win
+            # Print message for a user win (Authored by Group 35, Group 6, ChatGPT)
             if all(ship.is_sunk() for ship in ai_board.ships):
                 print("Player wins! Congratulations!")
                 break
@@ -306,17 +306,17 @@ def game_loop(player_board, ai_board, ai):
         sleep(2)
         turn += 1
 
-# Function to handle bomb firing affecting the entire row and column
+# Function to handle bomb firing affecting the entire row and column (Authored by Group 35, Group 6, ChatGPT)
 def fire_bomb(opponent_board, row, col):
     hits = []
 
-    # Fire bomb in the entire row
+    # Fire bomb in the entire row (Authored by Group 35, Group 6, ChatGPT)
     for c in range(opponent_board.size):  # Iterate over the entire row
         result = opponent_board.fire(row, c, True)
         if result in (1, 3):  # Hit
             hits.append((row, c))
 
-    # Fire bomb in the entire column
+    # Fire bomb in the entire column (Authored by Group 35, Group 6, ChatGPT)
     for r in range(opponent_board.size):  # Iterate over the entire column
         result = opponent_board.fire(r, col, True)
         if result in (1, 3):  # Hit
@@ -324,12 +324,12 @@ def fire_bomb(opponent_board, row, col):
 
     return hits
 
-# Player's turn to fire a shot.
+# Player's turn to fire a shot. (Authored by Group 35, Group 6, ChatGPT)
 def player_turn(opponent_board, player_name, bomb_used):
     while True:
         print(f"\n{player_name}, it's your turn to fire.")
 
-        # Prompt for action based on whether the bomb has been used
+        # Prompt for action based on whether the bomb has been used (Authored by Group 35, Group 6, ChatGPT)
         if not bomb_used:
             choice = input("Choose to fire a shot or use a bomb (shot/bomb): ").lower()
         else:
@@ -337,10 +337,10 @@ def player_turn(opponent_board, player_name, bomb_used):
 
         if choice == "bomb":
 
-            # Prompt for bomb coordinates
+            # Prompt for bomb coordinates (Authored by Group 35, Group 6, ChatGPT)
             shot = input("Enter coordinates to fire bomb (e.g., A5): ").upper()
 
-            # Validate input
+            # Validate input (Authored by Group 35, Group 6, ChatGPT)
             if len(shot) < 2 or not shot[0].isalpha() or not shot[1:].isdigit():
                 print("Invalid input! Please enter a valid position like 'A5'.")
                 continue
@@ -348,12 +348,12 @@ def player_turn(opponent_board, player_name, bomb_used):
             col = ord(shot[0]) - 65  # Set column
             row = int(shot[1:]) - 1  # Set row 
 
-            # Validate the row and column when placing ships and handle errors accordingly
+            # Validate the row and column when placing ships and handle errors accordingly (Authored by Group 35, Group 6, ChatGPT)
             if row < 0 or row >= opponent_board.size or col < 0 or col >= opponent_board.size:
                 print("Position out of bounds! Please try again.") 
                 continue
 
-            # Fire the bomb
+            # Fire the bomb (Authored by Group 35, Group 6, ChatGPT)
             hit_positions = fire_bomb(opponent_board, row, col)
             bomb_used = True  # Mark the bomb as used
 
@@ -368,24 +368,24 @@ def player_turn(opponent_board, player_name, bomb_used):
             # Prompt the player to enter coordinates to fire at, converting input to uppercase for consistency
             shot = input("Enter coordinates to fire (e.g., A5): ").upper()
 
-            # Validate the input format. It should have at least two characters: one letter and one number
+            # Validate the input format. It should have at least two characters: one letter and one number (Authored by Group 35, Group 6, ChatGPT)
             if len(shot) < 2 or not shot[0].isalpha() or not shot[1:].isdigit():
                 print("Invalid input! Please enter a valid position like 'A5'.")
                 continue
 
-            # Convert the column and row to appropriate format
+            # Convert the column and row to appropriate format (Authored by Group 35, Group 6, ChatGPT)
             col = ord(shot[0]) - 65
             row = int(shot[1:]) - 1
 
-            # Check if the entered coordinates are within the boundaries of the opponent's board
+            # Check if the entered coordinates are within the boundaries of the opponent's board (Authored by Group 35, Group 6, ChatGPT)
             if row < 0 or row >= opponent_board.size or col < 0 or col >= opponent_board.size:
                 print("Position out of bounds! Please try again.")
                 continue
 
-            # Fire at the specified coordinates on the opponent's board and store the result
+            # Fire at the specified coordinates on the opponent's board and store the result (Authored by Group 35, Group 6, ChatGPT)
             result = opponent_board.fire(row, col)
 
-            # Conditions for output and storing result
+            # Conditions for output and storing result (Authored by Group 35, Group 6, ChatGPT)
             if result == 1 or result == 3:
                 print(f"{player_name} chose {shot} and hit!")
             elif result == 2:
@@ -399,7 +399,7 @@ def player_turn(opponent_board, player_name, bomb_used):
             print("Invalid choice! Please choose 'shot' or 'bomb'.")
 
 
-# Main function to start the game, creates the boards and begins the game loop.
+# Main function to start the game, creates the boards and begins the game loop. (Authored by Group 35, Group 6, ChatGPT)
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
         DBG = int(sys.argv[1]) == 1
